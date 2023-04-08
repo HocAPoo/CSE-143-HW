@@ -1,0 +1,154 @@
+//Alexander Vuu
+//TA: Nathan
+//CSE143 Section A
+//10/23/22
+//manages a game of hangman where the computer is cheating by not 
+//picking a work until the user guesses a letter
+
+//how to deal with illegal characters like ! , @ , # and stuff. Should I give a guess back?
+import java.util.*;
+public class HangmanManager {
+    
+    private int numOfGuess;
+    private Set<String> newDictionary;
+    private Set<Character> guessedChars;
+    private String lastString;
+    
+    
+
+    HangmanManager(Collection<String> dictionary, int length, int max){
+        if((length < 1) || (max < 0)){
+            throw new IllegalArgumentException();
+        }
+        numOfGuess = max;
+        
+        newDictionary = new TreeSet<>();
+        guessedChars = new TreeSet<>();
+        lastString = "-";
+        for(int i = 1; i < length; i++){
+            lastString += " -";
+        }
+
+        for(String word : dictionary){
+            if(word.length() == length){
+                newDictionary.add(word);
+            }
+        }
+
+        //Reduced dictionary is //System.out.println(newDictionary);
+        
+    }
+    
+    public Set<String> words(){
+        return newDictionary;
+    }
+    
+    public int guessLeft(){
+        return numOfGuess;
+    }
+
+    public Set<Character> guesses(){
+        return guessedChars;
+    }
+/*
+    public String pattern(){
+        if(newDictionary.isEmpty()){
+            throw new IllegalStateException();
+        }
+        int max = 0;
+
+
+    }
+*/
+
+
+
+    public int record(char guess){
+        if((numOfGuess <= 0) || (newDictionary.isEmpty())){
+            throw new IllegalStateException();
+        }
+        else if(guessedChars.contains(guess)){//thows new exception if previous exception wasnt thrown or charcter that was guessed was guessed previously
+            throw new IllegalArgumentException();
+        }
+        Set<String> containsLetter = new TreeSet<>();
+        Map<String, Set<String>> pattern = new TreeMap<>();
+        Set<String> hasNoLetter = new TreeSet<>();
+        
+        int max = 0;
+        int count = 0;
+        String biggestKey = "";
+        guessedChars.add(guess);
+        //divides up words into two sets. words that have the letter and words that dont
+        for(String dicWord : newDictionary){
+            if(dicWord.indexOf(guess) > -1){
+                containsLetter.add(dicWord);
+            }
+            else{
+                hasNoLetter.add(dicWord);
+            }
+        }
+        //System.out.println("letter is in these words     =>" + containsLetter);
+        //System.out.println("letter is not in these words =>" + hasNoLetter + "\n\n------------------------\n\n");
+        //if letter isnt in newDictionary that computer is considering skips
+        if(!containsLetter.isEmpty()){
+            //iterates through to make the key strings and adds words to the set values
+            for(String eachWord : containsLetter){
+                String wordPattern = "";
+                //makes the keys
+                
+                if(guessedChars.contains(eachWord.charAt(0))){
+                    wordPattern += eachWord.charAt(0);
+                }
+                else{
+                    wordPattern += "-";
+                }
+                for(int i = 1; i < eachWord.length(); i++){
+                    if(guessedChars.contains(eachWord.charAt(i))){
+                        wordPattern += " " + eachWord.charAt(i);
+                    }
+                    else{
+                        wordPattern += " -";
+                    }
+                }
+                //creates each value in the map
+                if (!pattern.containsKey(wordPattern)) {
+                    pattern.put(wordPattern, new TreeSet<>());
+                }
+                pattern.get(wordPattern).add(eachWord);
+            }
+            //iterates to find biggest keyvalue's set size
+            for(String patternSets : pattern.keySet()){
+                //System.out.print("Key Values = " + patternSets);
+                //System.out.println(" values are: " + pattern.get(patternSets) + " the size of each keyset in the map: " + pattern.get(patternSets).size());
+                if(pattern.get(patternSets).size() > max){
+                    max = pattern.get(patternSets).size();
+                    biggestKey = patternSets;
+                }
+            }
+            //System.out.println("\n\n ------------------------ \n\nbiggest key is: " + biggestKey + "\nkeyset's contents: " + pattern.get(biggestKey));
+            
+        }
+        //sees if the user forced computer to give a letter away
+        if((!containsLetter.isEmpty()) && (pattern.get(biggestKey).size() > hasNoLetter.size())){
+            for(int i = 0; i < biggestKey.length(); i++){
+                if(biggestKey.charAt(i) == (guess)){
+                    count ++;
+                } 
+            }
+            newDictionary = pattern.get(biggestKey);
+            System.out.println("\nCorrect guess. You have " + numOfGuess + " guesses left\n");
+            System.out.println("GAME: " + biggestKey + "\n");
+            lastString = biggestKey;
+        }
+        else{
+            count = 0;
+            newDictionary = hasNoLetter;
+            numOfGuess --;
+            System.out.println("\nWrong guess. You have " + numOfGuess + " guesses left\n");
+            System.out.println("GAME: " + lastString + "\n");
+        }
+        System.out.println("The computer chooses this set " + newDictionary);
+        return count;
+    }
+    
+}

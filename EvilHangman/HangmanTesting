@@ -1,0 +1,13 @@
+//import java.util.*;
+public class HangmanTesting {
+    public static final String DICTIONARY_FILE = "/User/HocVuu/Cse143/EvilHangman/dictionary.txt";
+
+    public static void main(String[] args) throws FileNotFoundException{
+        Scanner input = new Scanner(new File(DICTIONARY_FILE));
+        List<String> dictionary = new ArrayList<>();
+        while (input.hasNext()) {
+            dictionary.add(input.next().toLowerCase());
+        }
+        
+    }
+}

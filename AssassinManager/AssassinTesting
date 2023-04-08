@@ -1,0 +1,11 @@
+import java.io.*;
+import java.util.*;
+
+public class AssassinTesting{
+    public static void main(String[] agrs){
+        List<String> names = new ArrayList<>();
+        names.add("Bob");
+        names.add("joe");
+        names.add("Hoc");
+    }
+}
